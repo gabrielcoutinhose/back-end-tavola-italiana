@@ -1,0 +1,76 @@
+name: Build and Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd="pg_isready -U postgres" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=3
+      mongo:
+        image: mongo:4
+        ports:
+          - "27017:27017"
+        options: >-
+          --health-cmd="echo 'db.runCommand({ ping: 1 })' | mongo --quiet"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "22"
+
+      - name: Install Dependencies
+        run: yarn install
+
+      # - name: Run Tests
+      #   run: yarn test
+
+      - name: Build Docker Image for Production
+        run: |
+          docker build -t backend:prod --build-arg NODE_ENV=production .
+
+      # - name: Run Backend in Production Mode
+      #   run: |
+      #     docker run -e NODE_ENV=production -p 8080:8080 backend:prod
+
+      - name: Run Backend in Production Mode
+        run: |
+          docker run -d --name backend-prod \
+            --link postgres:postgres-db \
+            --link mongo:mongo-db \
+            -e NODE_ENV=production \
+            -e POSTGRES_USER=user \
+            -e POSTGRES_PASSWORD=password \
+            -e POSTGRES_DB=example \
+            -e POSTGRES_HOST=postgres-db \
+            -e MONGO_URI=mongodb://mongo-db:27017/your_database \
+            -p 8080:8080 backend:prod
+
+      # - name: Run Production Tests
+      #   run: |
+      #     curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8080 || exit 1
+
+      - name: Clean up
+        run: |
+          docker stop backend-prod || true
+          docker rm backend-prod || true
+          docker rmi backend:prod || true
