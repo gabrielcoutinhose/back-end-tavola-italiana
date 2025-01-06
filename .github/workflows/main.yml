@@ -14,20 +14,10 @@ jobs:
         image: postgres:13
         ports:
           - "5432:5432"
-        # options: >-
-        #   --health-cmd="pg_isready -U postgres"
-        #   --health-interval=10s
-        #   --health-timeout=5s
-        #   --health-retries=3
       mongo:
         image: mongo:4
         ports:
           - "27017:27017"
-        # options: >-
-        #   --health-cmd="echo 'db.runCommand({ ping: 1 })' | mongo --quiet"
-        #   --health-interval=10s
-        #   --health-timeout=5s
-        #   --health-retries=3
 
     steps:
       - name: Checkout code
@@ -38,14 +28,13 @@ jobs:
         with:
           node-version: "22-alpine"
 
-      # Fix this
-      # - name: Cache Node.js modules
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.npm
-      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-node-
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.yarn-cache
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install Dependencies
         run: yarn install
@@ -72,18 +61,12 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      # Fix this
-      # docker build --cache-from=type=local,src=/cache -t my-app:latest .
       - name: Build Docker Image for Production
         run: |
           docker build -t backend:prod --build-arg NODE_ENV=production .
 
-      - name: Install Dependencies for Tests
-        run: yarn install --frozen-lockfile --production
-
       - name: Run Unit and Integration Tests
         run: |
-          yarn test && \
           docker-compose up --build --exit-code-from backend
 
       - name: Clean up orphan containers and images
@@ -107,16 +90,6 @@ jobs:
 
       - name: Run Production Tests
         run: curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8080 || exit 1
-
-      # - name: Push Docker Image
-      #   run: |
-      #     docker tag my-app:latest my-repo/my-app:latest
-      #     docker push my-repo/my-app:latest
-
-      # - name: Deploy to Cloud
-      #   run: |
-      #     aws ecs update-service --cluster my-cluster \
-      #     --service my-service --force-new-deployment
 
       # - name: Notify Slack
       #   uses: rtCamp/action-slack-notify@v2

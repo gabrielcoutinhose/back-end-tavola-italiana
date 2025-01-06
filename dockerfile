@@ -13,17 +13,20 @@ RUN chown -R appuser:appgroup /app && chmod -R 750 /app
 # Switch to non-root user
 USER appuser
 
+# Creating and setting the .yarnrc (only for test)
+RUN touch /app/.yarnrc && chown appuser:appgroup /app/.yarnrc
+
 # Copy the package.json and yarn.lock files to install dependencies
 COPY package*.json yarn.lock ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile --only=production
+RUN yarn install --frozen-lockfile --only=prod
 
 # Copy the rest of the application code
 COPY . .
 
 # Set default environment variable
-ENV NODE_ENV=${NODE_ENV:-development}
+ENV NODE_ENV=${NODE_ENV:-dev}
 
 # Expose the application's port
 EXPOSE 3000
