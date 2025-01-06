@@ -101,3 +101,13 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
 ```bash
 docker-compose --env-file .env.production up --build
 ```
+
+- A second method; using the manual injection through the terminal(CLI)
+
+```bash
+docker run -d --name backend-prod \
+  --link postgres:postgres-db \
+  --link mongo:mongo-db \
+  --env-file .env.production \
+  -p 8080:8080 backend:prod
+```

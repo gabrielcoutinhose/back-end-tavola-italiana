@@ -1,4 +1,4 @@
-name: Build and Deploy Backend
+name: Build, Test and Deploy Backend
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-Test-And-deploy:
     runs-on: ubuntu-latest
 
     services:
@@ -36,7 +36,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "22"
+          node-version: "22-alpine"
+
+      # Fix this
+      # - name: Cache Node.js modules
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
 
       - name: Install Dependencies
         run: yarn install
@@ -49,8 +58,44 @@ jobs:
           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env.production
           echo "MONGO_URI=mongodb://mongo-db:27017/${{ secrets.MONGO_DB }}" >> .env.production
 
+      - name: Check Logs for Sensitive Data
+        run: |
+          grep -R --color=never '{{ secrets.' /github/workspace/ | tee /dev/null || true
+
+      - name: Clean up secrets
+        run: echo "Removing sensitive information from logs"
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          MONGO_DB: ${{ secrets.MONGO_DB }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      # Fix this
+      # docker build --cache-from=type=local,src=/cache -t my-app:latest .
       - name: Build Docker Image for Production
-        run: docker build -t backend:prod --build-arg NODE_ENV=production .
+        run: |
+          docker build -t backend:prod --build-arg NODE_ENV=production .
+
+      - name: Install Dependencies for Tests
+        run: yarn install --frozen-lockfile --production
+
+      - name: Run Unit and Integration Tests
+        run: |
+          yarn test && \
+          docker-compose up --build --exit-code-from backend
+
+      - name: Clean up orphan containers and images
+        run: |
+          docker-compose down -v --remove-orphans
+
+      - name: Run Linting
+        run: yarn lint
+
+      - name: Check for vulnerabilities
+        run: |
+          docker scan backend:prod
 
       - name: Run Backend in Production Mode
         run: |
@@ -63,11 +108,21 @@ jobs:
       - name: Run Production Tests
         run: curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8080 || exit 1
 
+      # - name: Push Docker Image
+      #   run: |
+      #     docker tag my-app:latest my-repo/my-app:latest
+      #     docker push my-repo/my-app:latest
+
+      # - name: Deploy to Cloud
+      #   run: |
+      #     aws ecs update-service --cluster my-cluster \
+      #     --service my-service --force-new-deployment
+
       # - name: Notify Slack
       #   uses: rtCamp/action-slack-notify@v2
       #   with:
       #     webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     message: "Build and Deploy completed successfully!"
+      #     message: "Build, Test and Deploy completed,  the Pipeline completed successfully!"
 
       - name: Clean up
         run: |
