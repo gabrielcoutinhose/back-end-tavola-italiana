@@ -1,4 +1,5 @@
 import app from "./app";
+
 const dotenv = require("dotenv");
 require("dotenv-safe").config({
   example: ".env.example",

@@ -1,35 +1,27 @@
-# Use a minimal Node.js base image (Alpine for smaller size)
 FROM node:22-alpine
 
-# Set the working directory
 WORKDIR /app
 
-# Add a non-root user to the container
 RUN addgroup -S appgroup && adduser -S --ingroup appgroup --disabled-password appuser
 
-# Adjust permissions for non-root user
 RUN chown -R appuser:appgroup /app && chmod -R 750 /app
 
-# Switch to non-root user
 USER appuser
 
-# Creating and setting the .yarnrc (only for test)
 RUN touch /app/.yarnrc && chown appuser:appgroup /app/.yarnrc
 
-# Copy the package.json and yarn.lock files to install dependencies
 COPY package*.json yarn.lock ./
 
-# Install dependencies
-RUN yarn install --frozen-lockfile --only=prod
+RUN yarn install --frozen-lockfile
 
-# Copy the rest of the application code
 COPY . .
 
-# Set default environment variable
 ENV NODE_ENV=${NODE_ENV:-dev}
 
-# Expose the application's port
-EXPOSE 3000
+RUN curl -sSL https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -o /wait-for-it.sh && chmod +x /wait-for-it.sh
 
-# Default command for running the application
+ENTRYPOINT ["sh", "-c", "./wait-for-it.sh mongodb:27017 -- ./wait-for-it.sh postgres:5432 --"]
+
 CMD ["sh", "-c", "yarn run ${NODE_ENV}"]
+
+EXPOSE 3000

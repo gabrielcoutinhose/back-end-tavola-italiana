@@ -8,24 +8,17 @@ import configPrettier from "eslint-config-prettier";
 export default [
   {
     languageOptions: {
-      // ecmaVersion: 12,
-      // sourceType: 'module',
       globals: globals.node,
     },
-    // env: {
-    //   es2021: true,
-    //   node: true,
-    // },
   },
-  // pluginStandard,
-  pluginJs.configs.recommended, // Recommended JS Settings
+  pluginJs.configs.recommended,
   {
     plugins: {
-      prettier: pluginPrettier, // Add the Prettier plugin
+      prettier: pluginPrettier,
     },
     rules: {
-      ...configPrettier.rules, // Disable conflicting rules between ESLint and Prettier
-      "prettier/prettier": "error", // Flags Prettier formatting errors
+      ...configPrettier.rules,
+      "prettier/prettier": "error",
     },
   },
 ];

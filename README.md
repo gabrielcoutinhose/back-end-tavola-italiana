@@ -66,26 +66,30 @@ tree -a -I "node_modules|dist|.git" > structure.txt
 
 ## Build and run, this project using different modes:
 
-### Just build and run
-
-- Build on (first time) using a copy of .env.example (.env)
+### Mounting, reassembly, running and stopping the project container.
 
 ```bash
-docker-compose up --build
-```
-
-- Build on (another time) using a copy of .env.example (.env)
-
-```bash
+docker-compose build
 docker-compose up
+docker-compose down
 ```
 
-### Development building
-
-- Build on (dev mode) using a copy of .env.example (.env) (basically, i set this mode, to use the hot reload with nodemon)
+### Configured in this project
 
 ```bash
-docker-compose up --dev
+NODE_ENV=dev docker-compose up
+```
+
+```bash
+NODE_ENV=debug docker-compose up
+```
+
+```bash
+NODE_ENV=test docker-compose up
+```
+
+```bash
+NODE_ENV=production docker-compose up -d
 ```
 
 ### Simulated production building
