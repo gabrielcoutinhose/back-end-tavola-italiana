@@ -18,10 +18,15 @@ COPY . .
 
 ENV NODE_ENV=${NODE_ENV:-dev}
 
-RUN curl -sSL https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -o /wait-for-it.sh && chmod +x /wait-for-it.sh
+USER root
 
-ENTRYPOINT ["sh", "-c", "./wait-for-it.sh mongodb:27017 -- ./wait-for-it.sh postgres:5432 --"]
+RUN apk add --no-cache curl bash && \
+    curl -sSL https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar -xz -C /usr/local/bin
 
-CMD ["sh", "-c", "yarn run ${NODE_ENV}"]
+USER appuser
+
+ENTRYPOINT ["dockerize", "-wait", "tcp://mongodb:27017", "-wait", "tcp://postgres:5432", "-timeout", "6s"]
+
+CMD ["yarn", "run", "${NODE_ENV}"]
 
 EXPOSE 3000

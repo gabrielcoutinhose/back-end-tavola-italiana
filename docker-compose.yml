@@ -56,6 +56,8 @@ services:
 
   fluent-bit:
     image: fluent/fluent-bit:latest
+    networks:
+      - app-network
     volumes:
       - ./fluent-bit.conf:/fluent-bit.conf:ro
       - ./fluent-bit-config:/fluent-bit/etc:ro
