@@ -25,8 +25,8 @@ RUN apk add --no-cache curl bash && \
 
 USER appuser
 
-ENTRYPOINT ["dockerize", "-wait", "tcp://mongodb:27017", "-wait", "tcp://postgres:5432", "-timeout", "6s"]
+ENTRYPOINT ["dockerize", "-wait", "tcp://mongodb:27017", "-wait", "tcp://postgres:5432", "tcp://fluentbit:24224", "-timeout", "6s"]
 
-CMD ["yarn", "run", "${NODE_ENV}"]
+CMD ["sh", "-c", "yarn run ${NODE_ENV}"]
 
 EXPOSE 3000
