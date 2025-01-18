@@ -31,10 +31,18 @@ services:
       - ./data:/app/data:rw
       - ./logs:/var/log:rw
     depends_on:
-      - postgres
-      - mongo
-      - fluent-bit
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      fluent-bit:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${PORT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres:
     image: postgres:13
@@ -49,6 +57,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mongo:
     image: mongo:4
@@ -63,6 +76,12 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_DB}
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   fluent-bit:
     image: fluent/fluent-bit:latest
@@ -73,11 +92,16 @@ services:
       - ./fluent-bit-config:/fluent-bit/etc:rw
       - ./logs:/var/log:rw
     environment:
-      FLUENTBIT_CONF=/fluent-bit/etc/fluent-bit.conf
-      FLUENTBIT_LOG_LEVEL=info
+      FLUENTBIT_CONF: /fluent-bit/etc/fluent-bit.conf
+      FLUENTBIT_LOG_LEVEL: info
     ports:
       - "${FLUENTBIT_PORT}:${FLUENTBIT_PORT}"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2020/api/v1/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app_network:
