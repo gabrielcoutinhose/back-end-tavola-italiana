@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 module.exports = {
   dialect: "postgres",
   host: process.env.POSTGRES_HOST,
@@ -10,4 +12,6 @@ module.exports = {
     underscored: true,
     underscoredAll: true,
   },
+  // to debug
+  // logging: console.log,
 };

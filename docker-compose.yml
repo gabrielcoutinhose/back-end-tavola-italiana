@@ -35,8 +35,9 @@ services:
         condition: service_healthy
       mongo:
         condition: service_healthy
-      fluent-bit:
-        condition: service_healthy
+      # Resolve this later(it's not working)
+      # fluent-bit:
+      #   condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:${PORT}"]
