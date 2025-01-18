@@ -12,6 +12,4 @@ module.exports = {
     underscored: true,
     underscoredAll: true,
   },
-  // to debug
-  // logging: console.log,
 };

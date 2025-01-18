@@ -1,5 +1,5 @@
 import Sequelize from "sequelize";
-import User from "../app/models/User";
+import User from "../app/models/User.model";
 import configDatabase from "../config/database";
 
 const models = [User];
@@ -9,8 +9,8 @@ class Database {
     this.init();
   }
   init() {
-    this.connetion = new Sequelize(configDatabase);
-    models.map((model) => model.init(this.connetion));
+    this.connection = new Sequelize(configDatabase);
+    models.map((model) => model.init(this.connection));
   }
 }
 
