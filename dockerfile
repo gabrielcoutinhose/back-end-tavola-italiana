@@ -6,7 +6,8 @@ RUN addgroup -S appgroup && adduser -S --ingroup appgroup --disabled-password ap
 
 RUN chown -R appuser:appgroup /app && chmod -R 750 /app
 
-USER appuser
+# Resolve this later(This is interfering with the ProductController image upload feature.)
+# USER appuser
 
 RUN touch /app/.yarnrc && chown appuser:appgroup /app/.yarnrc
 
