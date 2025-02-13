@@ -5,6 +5,7 @@ import UserController from "./app/controllers/User.controller";
 import SessionController from "./app/controllers/Session.controller";
 import ProductController from "./app/controllers/Product.controller";
 import authMiddleware from "./app/middlewares/auth";
+import CategoryController from "./app/controllers/Category.controller";
 
 const upload = multer(multerConfig);
 
@@ -19,5 +20,8 @@ routes.use(authMiddleware);
 // RESOLVE LATER: problem on create; same using the authentication
 routes.post("/products", upload.single("file"), ProductController.store);
 routes.get("/products", ProductController.index);
+
+routes.post("/categories", CategoryController.store);
+routes.get("/categories", CategoryController.index);
 
 export default routes;
