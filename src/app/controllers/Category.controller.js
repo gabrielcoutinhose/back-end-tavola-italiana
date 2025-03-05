@@ -19,11 +19,13 @@ class CategoryController {
       name,
     });
 
+    // Check: if is expose the register data or not
     return response.json(category);
   }
 
   async index(request, response) {
     const category = await Category.findAll();
+    // Check: if is expose the register data or not
     return response.json(category);
   }
 }

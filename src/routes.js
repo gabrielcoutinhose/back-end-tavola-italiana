@@ -17,7 +17,7 @@ routes.post("/sessions", SessionController.store);
 
 routes.use(authMiddleware);
 
-// RESOLVE LATER: problem on create; same using the authentication
+// Fix: problem on create; same using the authentication
 routes.post("/products", upload.single("file"), ProductController.store);
 routes.get("/products", ProductController.index);
 

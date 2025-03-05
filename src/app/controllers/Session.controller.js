@@ -1,6 +1,6 @@
+import jwt from "jsonwebtoken";
 import * as Yup from "yup";
 import User from "../models/User.model";
-import jwt from "jsonwebtoken";
 import authConfig from "../../config/auth";
 
 class SessionController {
@@ -24,6 +24,7 @@ class SessionController {
 
     if (!(await user.checkPassword(password))) userEmailOrPasswordIncorrect();
 
+    // Check: if is expose the register data or not
     return response.json({
       id: user.id,
       email,

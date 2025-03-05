@@ -24,12 +24,13 @@ class ProductController {
       category,
       path,
     });
-
+    // Check: if is expose the register data or not
     return response.json(product);
   }
 
   async index(request, response) {
     const products = await Product.findAll();
+    // Check: if is expose the register data or not
     return response.json(products);
   }
 }

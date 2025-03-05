@@ -33,6 +33,7 @@ class UserController {
       admin,
     });
 
+    // Check: if is expose the register data or not
     return response.status(201).json({ id: user.id, name, email, admin });
   }
 }
