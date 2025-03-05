@@ -1,6 +1,15 @@
 # Back End Tavola Italiana (Simple Documentation)
 
-## Local project infrastructure
+## Local project structure
+
+### Notes
+
+- Run this CMD to neutralize errors; if necessary in local repo instances.
+- It will install the packages and project dependencies; (just to remove alert errors... because, we'll run in docker)
+
+```bash
+yarn
+```
 
 ### **Function Classification Table**
 
