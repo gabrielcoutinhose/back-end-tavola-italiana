@@ -15,9 +15,9 @@ export default {
     filename: (req, file, callback) => {
       try {
         const uniqueName = v4() + extname(file.originalname);
-        callback(null, uniqueName);
+        return callback(null, uniqueName);
       } catch (error) {
-        callback(error);
+        return callback(error);
       }
     },
   }),

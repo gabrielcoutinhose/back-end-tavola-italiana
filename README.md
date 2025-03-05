@@ -90,10 +90,6 @@ NODE_ENV=dev docker-compose up
 ```
 
 ```bash
-NODE_ENV=debug docker-compose up
-```
-
-```bash
 NODE_ENV=test docker-compose up
 ```
 
