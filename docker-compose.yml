@@ -3,19 +3,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE
+    # cap_drop:
+    #   - ALL
+    # cap_add:
+    #   - NET_BIND_SERVICE
     ports:
       - "${PORT}:${PORT}"
     environment:
-      YARN_CACHE_FOLDER: /app/.yarn-cache
-      YARN_RC_FILE: /app/.yarnrc
+      # YARN_CACHE_FOLDER: /app/.yarn-cache
+      # YARN_RC_FILE: /app/.yarnrc
       NODE_ENV: ${NODE_ENV}
       DEBUG: ${DEBUG}
       JWT_SECRET: ${JWT_SECRET}
-      FLUENTBIT_PORT: ${FLUENTBIT_PORT}
+      # FLUENTBIT_PORT: ${FLUENTBIT_PORT}
       MONGO_PORT: ${MONGO_PORT}
       MONGO_URI: ${MONGO_URI}
       MONGO_USER: ${MONGO_USER}
@@ -83,26 +83,25 @@ services:
       timeout: 5s
       retries: 5
 
-
-  fluent-bit:
-    image: fluent/fluent-bit:latest
-    networks:
-      - app_network
-    volumes:
-      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
-      - ./fluent-bit-config:/fluent-bit/etc:rw
-      - ./logs:/var/log:rw
-    environment:
-      FLUENTBIT_CONF: /fluent-bit/etc/fluent-bit.conf
-      FLUENTBIT_LOG_LEVEL: info
-    ports:
-      - "${FLUENTBIT_PORT}:${FLUENTBIT_PORT}"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2020/api/v1/metrics"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # fluent-bit:
+  #   image: fluent/fluent-bit:latest
+  #   networks:
+  #     - app_network
+  #   volumes:
+  #     - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+  #     - ./fluent-bit-config:/fluent-bit/etc:rw
+  #     - ./logs:/var/log:rw
+  #   environment:
+  #     FLUENTBIT_CONF: /fluent-bit/etc/fluent-bit.conf
+  #     FLUENTBIT_LOG_LEVEL: info
+  #   ports:
+  #     - "${FLUENTBIT_PORT}:${FLUENTBIT_PORT}"
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "wget", "-q", "--spider", "http://localhost:2020/api/v1/metrics"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
 networks:
   app_network:
@@ -111,10 +110,10 @@ networks:
 volumes:
   encrypted_data:
     driver: local
-    driver_opts:
-      type: "ext4"
-      o: "encrypt"
+    # driver_opts:
+    #   type: "ext4"
+    #   o: "encrypt"
   postgres_data:
   mongo_data:
-  fluent-bit:
+  # fluent-bit:
   app:
