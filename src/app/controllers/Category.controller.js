@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import Category from "../models/Category";
+import Category from "../models/Category.model";
 
 class CategoryController {
   async store(request, response) {

@@ -1,12 +1,13 @@
 import * as Yup from "yup";
 import Product from "../models/Product.model";
+import Category from "../models/Category.model";
 
 class ProductController {
   async store(request, response) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       price: Yup.number().required().positive(),
-      category: Yup.string().required(),
+      category_id: Yup.number().required(),
     });
 
     try {
@@ -17,7 +18,7 @@ class ProductController {
       }
       const { filename: path } = request.file;
 
-      const { name, price, category } = request.body;
+      const { name, price, category_id } = request.body;
 
       const productExists = await Product.findOne({ where: { name } });
       if (productExists) {
@@ -27,7 +28,7 @@ class ProductController {
       const product = await Product.create({
         name,
         price,
-        category,
+        category_id,
         path,
       });
 
@@ -35,7 +36,7 @@ class ProductController {
         id: product.id,
         name,
         price,
-        category,
+        category_id,
         path,
       });
     } catch (err) {
@@ -57,7 +58,15 @@ class ProductController {
 
   async index(request, response) {
     try {
-      const products = await Product.findAll();
+      const products = await Product.findAll({
+        include: [
+          {
+            model: Category,
+            as: "category",
+            attributes: ["id", "name"],
+          },
+        ],
+      });
       return response.status(200).json(products);
     } catch (err) {
       // console.error("Error on the ProductController.index:", err);
