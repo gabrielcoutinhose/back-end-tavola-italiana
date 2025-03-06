@@ -1,5 +1,5 @@
 import Sequelize from "sequelize";
-import { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 import configDatabase from "../config/database";
 import User from "../app/models/User.model";
@@ -25,15 +25,13 @@ class Database {
   }
 
   mongo() {
-    this.mongoConnection = Mongoose.connect(
-      configDatabase.mongo.uri,
-      configDatabase.mongo.mongooseOptions,
-    )
+    this.mongoConnection = mongoose
+      .connect(configDatabase.mongo.uri, configDatabase.mongo.mongooseOptions)
       .then(() => {
         console.log("Connection to MongoDB established successfully!");
         mongoModels.forEach((model) => {
           if (model.mongoInit) {
-            model.mongoInit(Mongoose);
+            model.mongoInit(mongoose);
           }
         });
       })
