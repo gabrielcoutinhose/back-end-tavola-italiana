@@ -46,7 +46,7 @@ class UserController {
       // }
       // return response.status(500).json({ error: "Internal server error" });
 
-      return response.status(400).json({ msg: "error" }, { err });
+      return response.status(400).json({ msg: "error", err });
     }
   }
 }

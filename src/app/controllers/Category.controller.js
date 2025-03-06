@@ -2,36 +2,53 @@ import * as Yup from "yup";
 import Category from "../models/Category";
 
 class CategoryController {
-  // Fix: in error cases; the api is broking; just like the other controllers
   async store(request, response) {
-    try {
-      const schema = Yup.object().shape({
-        name: Yup.string().required(),
-      });
-      await schema.validateSync(request.body, { abortEarly: false });
-    } catch (err) {
-      return response.status(400).json({ error: err.errors });
-    }
+    const schema = Yup.object().shape({
+      name: Yup.string().required(),
+    });
 
     try {
+      await schema.validate(request.body, { abortEarly: false });
+
       const { name } = request.body;
-      const category = await Category.create({
-        name,
+
+      const categoryExists = await Category.findOne({ where: { name } });
+      if (categoryExists) {
+        return response.status(400).json({ error: "Category already exists" });
+      }
+
+      const category = await Category.create({ name });
+
+      return response.status(201).json({
+        id: category.id,
+        name: category.name,
       });
-      // Check: if is expose the register data or not
-      return response.status(200).json({ msg: "ok" }, { category });
     } catch (err) {
-      return response.status(400).json({ error: err.errors });
+      // console.error("Error in CategoryController.store: ", err);
+      // if (err instanceof Yup.ValidationError) {
+      //   return response
+      //     .status(400)
+      //     .json({ error: "Validation failed", details: err.errors });
+      // }
+      // if (err.name === "SequelizeUniqueConstraintError") {
+      //   return response
+      //     .status(400)
+      //     .json({ error: "Category name already in use" });
+      // }
+      // return response.status(500).json({ error: "Internal server error" });
+      return response.status(400).json({ msg: "error", err });
     }
   }
 
   async index(request, response) {
     try {
       const categories = await Category.findAll();
-      // Check: if is expose the register data or not
-      return response.status(200).json({ msg: "ok" }, { categories });
+
+      return response.status(200).json(categories);
     } catch (err) {
-      return response.status(400).json({ error: err.errors });
+      // console.error("Error in CategoryController.index:", err);
+      // return response.status(500).json({ error: "Internal server error" });
+      return response.status(400).json({ msg: "error", err });
     }
   }
 }
