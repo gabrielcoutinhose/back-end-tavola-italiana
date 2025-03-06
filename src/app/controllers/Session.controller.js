@@ -4,44 +4,50 @@ import User from "../models/User.model";
 import authConfig from "../../config/auth";
 
 class SessionController {
-  // Fix: in error cases; the api is broking; just like the other controllers
   async store(request, response) {
+    const schema = Yup.object().shape({
+      email: Yup.string().email().required(),
+      password: Yup.string().required(),
+    });
+
     try {
-      const schema = Yup.object().shape({
-        email: Yup.string().email().required(),
-        password: Yup.string().required(),
-      });
-
-      await schema.validateSync(request.body, { abortEarly: false });
-
-      const userEmailOrPasswordIncorrect = () => {
-        return response.status(400).json({ error: "Validation fails" });
-      };
-
-      if (!(await schema.isValid(request.body))) userEmailOrPasswordIncorrect();
+      await schema.validate(request.body, { abortEarly: false });
 
       const { email, password } = request.body;
 
       const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return response.status(401).json({ error: "User not found" });
+      }
 
-      if (!user) userEmailOrPasswordIncorrect();
+      if (!(await user.checkPassword(password))) {
+        return response.status(401).json({ error: "Incorrect password" });
+      }
 
-      if (!(await user.checkPassword(password))) userEmailOrPasswordIncorrect();
+      const token = jwt.sign({ id: user.id }, authConfig.secret, {
+        algorithm: authConfig.algorithm,
+        expiresIn: authConfig.expiresIn,
+      });
 
-      // Check: if is expose the register data or not
-      // Fix: in error cases; the api is broking; just like the other controllers
       return response.json({
         id: user.id,
-        email,
         name: user.name,
-        admin: user.admin,
-        token: jwt.sign({ id: user.id }, authConfig.secret, {
-          algorithm: authConfig.algorithm,
-          expiresIn: authConfig.expiresIn,
-        }),
+        email,
+        admin: user.admin || false,
+        token,
       });
     } catch (err) {
-      return response.status(400).json({ error: err.errors });
+      // console.error("Error in SessionController.store: ", err);
+      // if (err instanceof Yup.ValidationError) {
+      //   return response
+      //     .status(400)
+      //     .json({ error: "Validation failed", details: err.errors });
+      // }
+      // if (err.name === "JsonWebTokenError") {
+      //   return response.status(500).json({ error: "Error generating token" });
+      // }
+      // return response.status(500).json({ error: "Internal server error" });
+      return response.status(400).json({ msg: "error" }, { err });
     }
   }
 }

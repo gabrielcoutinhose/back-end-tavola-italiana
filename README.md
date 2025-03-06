@@ -4,8 +4,14 @@
 
 ### Notes
 
+#### 1
+
 - Run this CMD to neutralize errors; if necessary in local repo instances.
 - It will install the packages and project dependencies; (just to remove alert errors... because, we'll run in docker)
+
+#### 2
+
+- The project is configured to use hot-reload('nodemon'); But, tear down, rebuild and re-build; whenever you make significant changes... I've had the same error appear a few times, even after corrections and only exit when this process is completed.
 
 ```bash
 yarn
