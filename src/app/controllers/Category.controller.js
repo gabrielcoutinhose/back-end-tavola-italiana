@@ -48,6 +48,10 @@ class CategoryController {
     } catch (err) {
       // console.error("Error in CategoryController.index:", err);
       // return response.status(500).json({ error: "Internal server error" });
+      if (response.headersSent) {
+        console.log("Headers already sent, ignoring...");
+        return;
+      }
       return response.status(400).json({ msg: "error", err });
     }
   }
