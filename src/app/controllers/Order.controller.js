@@ -80,6 +80,40 @@ class OrderController {
       return response.status(400).json({ msg: "error", err });
     }
   }
+
+  async index(request, response) {
+    try {
+      const orders = await Order.find();
+      return response.status(200).json(orders);
+    } catch (err) {
+      // console.error("Error on the UserController.index:", err);
+      // return response.status(500).json({ error: "Internal server error" });
+      return response.status(400).json({ msg: "error", err });
+    }
+  }
+
+  async update(request, response) {
+    const schema = Yup.object().shape({
+      status: Yup.string().required(),
+    });
+
+    try {
+      await schema.validate(request.body, { abortEarly: false });
+    } catch (err) {
+      return response.status(400).json({ msg: "error", err });
+    }
+
+    const { id } = request.params;
+    const { status } = request.body;
+
+    try {
+      await Order.updateOne({ _id: id }, { status });
+    } catch (err) {
+      return response.status(400).json({ msg: "error", err });
+    }
+
+    return response.status(200).json({ msg: "Order updated successfully" });
+  }
 }
 
 export default new OrderController();
