@@ -4,7 +4,7 @@ import multerConfig from "./config/multer";
 import UserController from "./app/controllers/User.controller";
 import SessionController from "./app/controllers/Session.controller";
 import ProductController from "./app/controllers/Product.controller";
-import authMiddleware from "./app/middlewares/auth";
+import authMiddleware from "./app/middlewares/auth.middleware";
 import CategoryController from "./app/controllers/Category.controller";
 import OrderController from "./app/controllers/Order.controller";
 
