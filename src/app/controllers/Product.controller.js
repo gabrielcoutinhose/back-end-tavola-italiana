@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 import Product from "../models/Product.model";
 import Category from "../models/Category.model";
+import User from "../models/User.model";
 
 class ProductController {
   async store(request, response) {
@@ -12,6 +13,12 @@ class ProductController {
 
     try {
       await schema.validate(request.body, { abortEarly: false });
+
+      const { admin: isAdmin } = await User.findByPk(request.userId);
+
+      if (!isAdmin) {
+        return response.status(401).json({ error: "User is not an admin" });
+      }
 
       if (!request.file || !request.file.filename) {
         return response.status(400).json({ error: "Image file is required" });

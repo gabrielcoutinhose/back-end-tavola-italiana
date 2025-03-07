@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import Category from "../models/Category.model";
+import User from "../models/User.model";
 
 class CategoryController {
   async store(request, response) {
@@ -9,6 +10,12 @@ class CategoryController {
 
     try {
       await schema.validate(request.body, { abortEarly: false });
+
+      const { admin: isAdmin } = await User.findByPk(request.userId);
+
+      if (!isAdmin) {
+        return response.status(401).json({ error: "User is not an admin" });
+      }
 
       const { name } = request.body;
 
