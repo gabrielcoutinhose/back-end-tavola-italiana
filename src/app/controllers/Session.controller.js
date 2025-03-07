@@ -24,10 +24,14 @@ class SessionController {
         return response.status(401).json({ error: "Incorrect password" });
       }
 
-      const token = jwt.sign({ id: user.id }, authConfig.secret, {
-        algorithm: authConfig.algorithm,
-        expiresIn: authConfig.expiresIn,
-      });
+      const token = jwt.sign(
+        { id: user.id, name: user.name },
+        authConfig.secret,
+        {
+          algorithm: authConfig.algorithm,
+          expiresIn: authConfig.expiresIn,
+        },
+      );
 
       return response.json({
         id: user.id,
