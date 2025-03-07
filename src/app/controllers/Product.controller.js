@@ -9,6 +9,7 @@ class ProductController {
       name: Yup.string().required(),
       price: Yup.number().required().positive(),
       category_id: Yup.number().required(),
+      offer: Yup.boolean(),
     });
 
     try {
@@ -25,7 +26,7 @@ class ProductController {
       }
       const { filename: path } = request.file;
 
-      const { name, price, category_id } = request.body;
+      const { name, price, category_id, offer } = request.body;
 
       const productExists = await Product.findOne({ where: { name } });
       if (productExists) {
@@ -37,29 +38,12 @@ class ProductController {
         price,
         category_id,
         path,
+        offer,
       });
 
-      return response.status(201).json({
-        id: product.id,
-        name,
-        price,
-        category_id,
-        path,
-      });
+      return response.status(201).json(product);
     } catch (err) {
-      // console.error("Error on the ProductController.store:", err);
-      // if (err instanceof Yup.ValidationError) {
-      //   return response
-      //     .status(400)
-      //     .json({ error: "Validation failed", details: err.errors });
-      // }
-      // if (err.name === "SequelizeUniqueConstraintError") {
-      //   return response
-      //     .status(400)
-      //     .json({ error: "Product name already in use" });
-      // }
-      // return response.status(500).json({ error: "Internal server error" });
-      return response.status(400).json({ msg: "error", err });
+      return response.status(500).json({ error: "Internal server error" });
     }
   }
 
@@ -76,9 +60,64 @@ class ProductController {
       });
       return response.status(200).json(products);
     } catch (err) {
-      // console.error("Error on the ProductController.index:", err);
-      // return response.status(500).json({ error: "Internal server error" });
-      return response.status(400).json({ msg: "error", err });
+      return response.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async update(request, response) {
+    const schema = Yup.object().shape({
+      name: Yup.string(),
+      price: Yup.number().positive(),
+      category_id: Yup.number(),
+      offer: Yup.boolean(),
+    });
+
+    try {
+      await schema.validate(request.body, { abortEarly: false });
+
+      const { admin: isAdmin } = await User.findByPk(request.userId);
+
+      if (!isAdmin) {
+        return response.status(401).json({ error: "User is not an admin" });
+      }
+
+      const { id } = request.params;
+
+      const product = await Product.findByPk(id);
+
+      if (!product) {
+        return response
+          .status(404)
+          .json({ error: "Product not found or don't exist" });
+      }
+
+      let path;
+      if (request.file) {
+        path = request.file.filename;
+      }
+
+      if (!request.file || !request.file.filename) {
+        return response.status(400).json({ error: "Image file is required" });
+      }
+
+      const { name, price, category_id, offer } = request.body;
+
+      await Product.update(
+        {
+          name,
+          price,
+          category_id,
+          path,
+          offer,
+        },
+        {
+          where: { id },
+        },
+      );
+
+      return response.status(201).json();
+    } catch (err) {
+      return response.status(500).json({ error: "Internal server error" });
     }
   }
 }

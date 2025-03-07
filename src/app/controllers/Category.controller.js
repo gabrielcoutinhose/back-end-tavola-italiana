@@ -31,19 +31,7 @@ class CategoryController {
         name: category.name,
       });
     } catch (err) {
-      // console.error("Error in CategoryController.store: ", err);
-      // if (err instanceof Yup.ValidationError) {
-      //   return response
-      //     .status(400)
-      //     .json({ error: "Validation failed", details: err.errors });
-      // }
-      // if (err.name === "SequelizeUniqueConstraintError") {
-      //   return response
-      //     .status(400)
-      //     .json({ error: "Category name already in use" });
-      // }
-      // return response.status(500).json({ error: "Internal server error" });
-      return response.status(400).json({ msg: "error", err });
+      return response.status(500).json({ error: "Internal server error" });
     }
   }
 
@@ -53,13 +41,11 @@ class CategoryController {
 
       return response.status(200).json(categories);
     } catch (err) {
-      // console.error("Error in CategoryController.index:", err);
-      // return response.status(500).json({ error: "Internal server error" });
       if (response.headersSent) {
         console.log("Headers already sent, ignoring...");
         return;
       }
-      return response.status(400).json({ msg: "error", err });
+      return response.status(500).json({ error: "Internal server error" });
     }
   }
 }
