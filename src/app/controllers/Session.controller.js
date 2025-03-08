@@ -24,10 +24,14 @@ class SessionController {
         return response.status(401).json({ error: "Incorrect password" });
       }
 
-      const token = jwt.sign({ id: user.id }, authConfig.secret, {
-        algorithm: authConfig.algorithm,
-        expiresIn: authConfig.expiresIn,
-      });
+      const token = jwt.sign(
+        { id: user.id, name: user.name },
+        authConfig.secret,
+        {
+          algorithm: authConfig.algorithm,
+          expiresIn: authConfig.expiresIn,
+        },
+      );
 
       return response.json({
         id: user.id,
@@ -37,17 +41,7 @@ class SessionController {
         token,
       });
     } catch (err) {
-      // console.error("Error in SessionController.store: ", err);
-      // if (err instanceof Yup.ValidationError) {
-      //   return response
-      //     .status(400)
-      //     .json({ error: "Validation failed", details: err.errors });
-      // }
-      // if (err.name === "JsonWebTokenError") {
-      //   return response.status(500).json({ error: "Error generating token" });
-      // }
-      // return response.status(500).json({ error: "Internal server error" });
-      return response.status(400).json({ msg: "error", err });
+      return response.status(500).json({ error: "Internal server error" });
     }
   }
 }
