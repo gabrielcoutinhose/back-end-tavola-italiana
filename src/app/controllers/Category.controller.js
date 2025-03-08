@@ -74,6 +74,7 @@ class CategoryController {
       const { id } = request.params;
 
       const category = await Category.findByPk(id);
+      console.log(category);
 
       if (!category) {
         return response
@@ -95,6 +96,7 @@ class CategoryController {
 
       return response.status(200).json();
     } catch (err) {
+      console.log(err);
       return response.status(500).json({ error: "Internal server error" });
     }
   }
