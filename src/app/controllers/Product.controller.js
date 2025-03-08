@@ -43,6 +43,9 @@ class ProductController {
 
       return response.status(201).json(product);
     } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        return response.status(400).json({ error: err.errors });
+      }
       return response.status(500).json({ error: "Internal server error" });
     }
   }
@@ -88,35 +91,26 @@ class ProductController {
       if (!product) {
         return response
           .status(404)
-          .json({ error: "Product not found or don't exist" });
+          .json({ error: "Product not found or doesn't exist" });
       }
 
-      let path;
+      const updateData = {
+        name: request.body.name,
+        price: request.body.price,
+        category_id: request.body.category_id,
+        offer: request.body.offer,
+      };
       if (request.file) {
-        path = request.file.filename;
+        updateData.path = request.file.filename;
       }
 
-      if (!request.file || !request.file.filename) {
-        return response.status(400).json({ error: "Image file is required" });
-      }
+      await Product.update(updateData, { where: { id } });
 
-      const { name, price, category_id, offer } = request.body;
-
-      await Product.update(
-        {
-          name,
-          price,
-          category_id,
-          path,
-          offer,
-        },
-        {
-          where: { id },
-        },
-      );
-
-      return response.status(201).json();
+      return response.status(200).json();
     } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        return response.status(400).json({ error: err.errors });
+      }
       return response.status(500).json({ error: "Internal server error" });
     }
   }
