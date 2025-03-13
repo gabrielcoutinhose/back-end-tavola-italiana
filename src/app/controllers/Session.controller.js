@@ -21,7 +21,7 @@ class SessionController {
       }
 
       if (!(await user.checkPassword(password))) {
-        return response.status(401).json({ error: "Incorrect password" });
+        return response.status(402).json({ error: "Incorrect password" });
       }
 
       const token = jwt.sign(

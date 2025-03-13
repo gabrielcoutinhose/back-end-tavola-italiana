@@ -31,7 +31,7 @@ services:
       - app_network
     volumes:
       - ./data:/app/data:rw
-      - ./logs:/var/log:rw
+      - ./uploads:/app/uploads:rw
     depends_on:
       postgres:
         condition: service_healthy
@@ -114,9 +114,9 @@ networks:
 volumes:
   encrypted_data:
     driver: local
-    # driver_opts:
-    #   type: "ext4"
-    #   o: "encrypt"
+    driver_opts:
+      type: "ext4"
+      o: "encrypt"
   postgres_data:
   mongo_data:
   # fluent-bit:
