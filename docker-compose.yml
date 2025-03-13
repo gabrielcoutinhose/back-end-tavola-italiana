@@ -3,28 +3,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # Fix (This is interfering with the ProductController image upload feature.)
-    # cap_drop:
-    #   - ALL
-    # cap_add:
-    #   - NET_BIND_SERVICE
     ports:
       - "${PORT}:${PORT}"
     environment:
-      # YARN_CACHE_FOLDER: /app/.yarn-cache
-      # YARN_RC_FILE: /app/.yarnrc
-      NODE_ENV: ${NODE_ENV}
-      DEBUG: ${DEBUG}
-      JWT_SECRET: ${JWT_SECRET}
-      # FLUENTBIT_PORT: ${FLUENTBIT_PORT}
-      MONGO_PORT: ${MONGO_PORT}
-      MONGO_URI: ${MONGO_URI}
-      MONGO_USER: ${MONGO_USER}
-      MONGO_DB: ${MONGO_DB}
-      MONGO_PASSWORD: ${MONGO_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      PORT: ${PORT}
+    - NODE_ENV=${NODE_ENV:-dev}
+    - DEBUG=${DEBUG:-false}
+    - JWT_SECRET=${JWT_SECRET:-your_default_secret}
+    - BASE_URL=${BASE_URL:-http://localhost:3001}
+    - HOST=${HOST:-localhost}
+    - PORT=${PORT:-3001}
+    - POSTGRES_HOST=${POSTGRES_HOST:-localhost}
+    - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+    - MONGO_PORT=${MONGO_PORT:-27017}
+    - MONGO_URI=${MONGO_URI:-mongodb://localhost:27017}
+    - MONGO_USER=${MONGO_USER:-user}
+    - MONGO_DB=${MONGO_DB:-mydb}
+    - MONGO_PASSWORD=${MONGO_PASSWORD:-password}
+
     image: backend-tavola-italiana:v1.0.0
     container_name: backend
     networks:
@@ -37,9 +32,6 @@ services:
         condition: service_healthy
       mongo:
         condition: service_healthy
-      # Fix (It's getting in the way of the backend going up)
-      # fluent-bit:
-      #   condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:${PORT}"]
@@ -86,27 +78,6 @@ services:
       timeout: 5s
       retries: 5
 
-
-  # fluent-bit:
-  #   image: fluent/fluent-bit:latest
-  #   networks:
-  #     - app_network
-  #   volumes:
-  #     - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
-  #     - ./fluent-bit-config:/fluent-bit/etc:rw
-  #     - ./logs:/var/log:rw
-  #   environment:
-  #     FLUENTBIT_CONF: /fluent-bit/etc/fluent-bit.conf
-  #     FLUENTBIT_LOG_LEVEL: info
-  #   ports:
-  #     - "${FLUENTBIT_PORT}:${FLUENTBIT_PORT}"
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD", "wget", "-q", "--spider", "http://localhost:2020/api/v1/metrics"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-
 networks:
   app_network:
     driver: bridge
@@ -119,5 +90,4 @@ volumes:
       o: "encrypt"
   postgres_data:
   mongo_data:
-  # fluent-bit:
   app:
