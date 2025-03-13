@@ -1,6 +1,6 @@
 import express from "express";
 import routes from "./routes";
-import { resolve } from "path";
+import path from "path";
 
 import cors from "cors";
 
@@ -16,12 +16,12 @@ class App {
   middlewares() {
     this.app.use(express.json());
     this.app.use(
-      "/product-file",
-      express.static(resolve(__dirname, "..", "uploads")),
+      "/category-file",
+      express.static(path.join(__dirname, "..", "uploads")),
     );
     this.app.use(
-      "/category-file",
-      express.static(resolve(__dirname, "..", "uploads")),
+      "/product-file",
+      express.static(path.join(__dirname, "..", "uploads")),
     );
   }
   routes() {

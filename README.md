@@ -129,29 +129,34 @@ docker run -d --name backend-prod \
 
 ### Sequelize Migrations
 
--  Run only after the first **build** and **up**; Or to apply new changes to migrations; (Attention)
+- Run only after the first **build** and **up**; Or to apply new changes to migrations; (Attention)
 
 - Make sure the container is running; along with the postgres one
+
 ```bash
 docker-compose up -d
 ```
 
 - Run the migration
+
 ```bash
 docker-compose exec backend yarn migrate
 ```
 
-- Run the reverse migration 
+- Run the reverse migration
+
 ```bash
 docker-compose exec backend yarn migrate:undo
 ```
 
 - Run the migration create (pre-automated mode)
+
 ```bash
 docker-compose exec backend yarn migration:create create-product-offers-column
 ```
 
 - Run the migration create (manual mode)
+
 ```bash
 docker-compose exec backend yarn sequelize migration:create --name=create-product-offers-column
 ```

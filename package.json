@@ -9,7 +9,10 @@
     "production": "node app.js",
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo",
-    "migration:create": "sequelize migration:create --name"
+    "migration:create": "sequelize migration:create --name",
+    "lint": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,mjs,cjs,jsx,json,css,md}\"",
+    "lint:check": "eslint ."
   },
   "keywords": [],
   "author": "",

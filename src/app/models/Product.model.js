@@ -11,7 +11,10 @@ class Product extends Model {
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return `http://localhost:3000/product-file/${this.path}`;
+            const baseUrl =
+              process.env.BASE_URL ||
+              `http://${process.env.HOST}:${process.env.PORT}`;
+            return `${baseUrl}/product-file/${this.path}`;
           },
         },
       },
