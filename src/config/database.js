@@ -1,12 +1,15 @@
 require("dotenv").config();
 
 const postgresConfig = {
-  username: process.env.POSTGRES_USER || "your_postgres_user",
-  password: process.env.POSTGRES_PASSWORD || "your_postgres_password",
-  database: process.env.POSTGRES_DB || "psqldb",
-  host: process.env.POSTGRES_HOST || "postgres",
-  port: process.env.POSTGRES_PORT || "5432",
+  url:
+    process.env.DATABASE_URL || "postgres://USER:PASSWORD@HOST:PORT/DATABASE",
   dialect: "postgres",
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
   define: {
     timestamps: true,
     underscored: true,
@@ -15,14 +18,9 @@ const postgresConfig = {
 };
 
 const mongoConfig = {
-  username: process.env.MONGO_USER || "your_mongo_user",
-  password: process.env.MONGO_PASSWORD || "your_mongo_password",
-  database: process.env.MONGO_DB || "your_mongo_db",
-  host: process.env.MONGO_HOST || "mongo",
-  port: process.env.MONGO_PORT || "27017",
   uri:
     process.env.MONGO_URI ||
-    `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`,
+    "mongodb+srv://<user>:<db_password>@cluster0.pfaka3h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
   mongooseOptions: {},
 };
 

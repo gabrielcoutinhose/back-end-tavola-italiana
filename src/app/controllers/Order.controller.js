@@ -75,7 +75,7 @@ class OrderController {
       const orderResponse = await Order.create(order);
 
       return response.status(201).json(orderResponse);
-    } catch (err) {
+    } catch {
       return response.status(500).json({ error: "Internal server error" });
     }
   }
@@ -84,7 +84,7 @@ class OrderController {
     try {
       const orders = await Order.find();
       return response.status(200).json(orders);
-    } catch (err) {
+    } catch {
       return response.status(500).json({ error: "Internal server error" });
     }
   }
@@ -96,7 +96,7 @@ class OrderController {
 
     try {
       await schema.validate(request.body, { abortEarly: false });
-    } catch (err) {
+    } catch {
       return response.status(500).json({ error: "Internal server error" });
     }
 
@@ -111,7 +111,7 @@ class OrderController {
 
     try {
       await Order.updateOne({ _id: id }, { status });
-    } catch (err) {
+    } catch {
       return response.status(500).json({ error: "Internal server error" });
     }
 

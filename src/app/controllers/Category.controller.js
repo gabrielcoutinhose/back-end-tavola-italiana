@@ -27,9 +27,11 @@ class CategoryController {
       if (!request.file || !request.file.filename) {
         return response.status(400).json({ error: "Image file is required" });
       }
-      const { filename: path } = request.file;
 
-      const category = await Category.create({ name, path });
+      const category = await Category.create({
+        name,
+        path: request.file.filename,
+      });
 
       return response.status(201).json({
         id: category.id,
@@ -47,7 +49,7 @@ class CategoryController {
     try {
       const categories = await Category.findAll();
       return response.status(200).json(categories);
-    } catch (err) {
+    } catch {
       if (response.headersSent) {
         console.log("Headers already sent, ignoring...");
         return;
@@ -87,13 +89,7 @@ class CategoryController {
         updateData.path = request.file.filename;
       }
 
-      let path;
-      if (request.file) {
-        path = request.file.filename;
-      }
-
       await Category.update(updateData, { where: { id } });
-
       return response.status(200).json();
     } catch (err) {
       console.log(err);

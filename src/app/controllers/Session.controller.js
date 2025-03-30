@@ -40,7 +40,7 @@ class SessionController {
         admin: user.admin || false,
         token,
       });
-    } catch (err) {
+    } catch {
       return response.status(500).json({ error: "Internal server error" });
     }
   }
