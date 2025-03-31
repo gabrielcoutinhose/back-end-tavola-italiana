@@ -1,8 +1,7 @@
 require("dotenv").config();
 
 const postgresConfig = {
-  url:
-    process.env.DATABASE_URL || "postgres://USER:PASSWORD@HOST:PORT/DATABASE",
+  url: process.env.DATABASE_URL,
   dialect: "postgres",
   dialectOptions: {
     ssl: {
@@ -18,9 +17,7 @@ const postgresConfig = {
 };
 
 const mongoConfig = {
-  uri:
-    process.env.MONGO_URI ||
-    "mongodb+srv://<user>:<db_password>@cluster0.pfaka3h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  uri: process.env.MONGO_URI,
   mongooseOptions: {},
 };
 

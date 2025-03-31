@@ -11,10 +11,11 @@ class Product extends Model {
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            const baseUrl =
-              process.env.BASE_URL ||
-              `http://${process.env.HOST}:${process.env.PORT}`;
-            return `${baseUrl}/product-file/${this.path}`;
+            const baseUrl = process.env.BASE_URL;
+            if (!baseUrl) {
+              console.warn("⚠️ BASE_URL is not set. Using fallback URL.");
+            }
+            return `${baseUrl || `http://${process.env.HOST}:${process.env.PORT}`}/product-file/${this.path}`;
           },
         },
       },

@@ -31,8 +31,10 @@ class UserController {
       return response
         .status(201)
         .json({ id: user.id, name, email, admin: user.admin || false });
-    } catch {
-      return response.status(500).json({ error: "Internal server error" });
+    } catch (err) {
+      return response
+        .status(500)
+        .json({ error: "Internal server error", msg: err });
     }
   }
 }

@@ -1,4 +1,3 @@
-// import pluginStandard from 'eslint-config-standard';
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginPrettier from "eslint-plugin-prettier";

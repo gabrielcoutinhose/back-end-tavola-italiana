@@ -1,16 +1,11 @@
 import app from "./app";
-
-const dotenv = require("dotenv");
-require("dotenv-safe").config({
-  example: ".env.example",
-});
+import dotenv from "dotenv-safe";
 
 dotenv.config();
-const PORT = process.env.PORT;
-const HOST = process.env.HOST;
-const NODE_ENV = process.env.NODE_ENV;
+
+const { BASE_URL, PORT, HOST, NODE_ENV } = process.env;
 
 app.listen(PORT, () => {
-  console.log(`Running in ${NODE_ENV} mode`);
-  console.log(`Server running on host ${HOST} and port ${PORT}`);
+  console.log(`🚀 Server running in ${NODE_ENV} mode`);
+  console.log(`🌍 Available at: ${BASE_URL || `http://${HOST}:${PORT}`}`);
 });
