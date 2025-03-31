@@ -3,9 +3,9 @@ import dotenv from "dotenv-safe";
 
 dotenv.config();
 
-const { BASE_URL, PORT, HOST, NODE_ENV } = process.env;
+const { BASE_URL } = process.env;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${NODE_ENV} mode`);
-  console.log(`🌍 Available at: ${BASE_URL || `http://${HOST}:${PORT}`}`);
+app.listen(() => {
+  console.log(`🚀 Server running in  production mode`);
+  console.log(`🌍 Available at: ${BASE_URL}`);
 });

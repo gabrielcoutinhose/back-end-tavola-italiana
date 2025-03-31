@@ -19,18 +19,18 @@ jobs:
           node-version: "20"
 
       - name: 📦 Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: 🎨 Run Linting
-        run: npm run lint
+        run: yarn lint
 
       - name: 🧪 Run Tests
-        run: npm test
+        run: yarn test
 
       - name: 🔄 Run Sequelize Migrations on Render PostgreSQL
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npm run migrate
+        run: yarn migrate
 
       - name: 🚀 Trigger Deploy on Render
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
