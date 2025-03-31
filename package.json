@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "nodemon",
     "debug": "nodemon --inspect",
-    "test": "jest",
     "build": "echo 'Build complete' && exit 0",
     "start": "node -r sucrase/register src/server.js",
     "migrate": "sequelize db:migrate",

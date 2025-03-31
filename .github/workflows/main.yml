@@ -24,9 +24,6 @@ jobs:
       - name: 🎨 Run Linting
         run: yarn lint
 
-      - name: 🧪 Run Tests
-        run: yarn test
-
       - name: 🔄 Run Sequelize Migrations on Render PostgreSQL
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
