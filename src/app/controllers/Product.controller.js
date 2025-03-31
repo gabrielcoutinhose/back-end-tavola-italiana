@@ -1,10 +1,7 @@
 import * as Yup from "yup";
 import Product from "../models/Product.model";
 import Category from "../models/Category.model";
-<<<<<<< HEAD
-=======
 import User from "../models/User.model";
->>>>>>> develop
 
 class ProductController {
   async store(request, response) {
@@ -12,10 +9,7 @@ class ProductController {
       name: Yup.string().required(),
       price: Yup.number().required().positive(),
       category_id: Yup.number().required(),
-<<<<<<< HEAD
-=======
       offer: Yup.boolean(),
->>>>>>> develop
     });
 
     try {
@@ -32,11 +26,7 @@ class ProductController {
       }
       const { filename: path } = request.file;
 
-<<<<<<< HEAD
-      const { name, price, category_id } = request.body;
-=======
       const { name, price, category_id, offer } = request.body;
->>>>>>> develop
 
       const productExists = await Product.findOne({ where: { name } });
       if (productExists) {
@@ -51,17 +41,7 @@ class ProductController {
         offer,
       });
 
-<<<<<<< HEAD
-      return response.status(201).json({
-        id: product.id,
-        name,
-        price,
-        category_id,
-        path,
-      });
-=======
       return response.status(201).json(product);
->>>>>>> develop
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         return response.status(400).json({ error: err.errors });

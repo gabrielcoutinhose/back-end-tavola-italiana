@@ -1,9 +1,6 @@
 import * as Yup from "yup";
 import Category from "../models/Category.model";
-<<<<<<< HEAD
-=======
 import User from "../models/User.model";
->>>>>>> develop
 
 class CategoryController {
   async store(request, response) {
