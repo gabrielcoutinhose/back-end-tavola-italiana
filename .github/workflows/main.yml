@@ -6,92 +6,31 @@ on:
       - main
 
 jobs:
-  build-Test-And-deploy:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - "5432:5432"
-      mongo:
-        image: mongo:4
-        ports:
-          - "27017:27017"
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: 🛠️ Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: "22-alpine"
+          node-version: "20"
 
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.yarn-cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      - name: 📦 Install dependencies
+        run: npm install
 
-      - name: Install Dependencies
-        run: yarn install
+      - name: 🎨 Run Linting
+        run: npm run lint
 
-      # - name: Create .env.production file
-      #   run: |
-      #     echo "NODE_ENV=production" > .env.production
-      #     echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env.production
+      - name: 🧪 Run Tests
+        run: npm test
 
-      - name: Check Logs for Sensitive Data
-        run: |
-          grep -R --color=never '{{ secrets.' /github/workspace/ | tee /dev/null || true
+      - name: 🔄 Run Sequelize Migrations on Render PostgreSQL
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npm run migrate
 
-      # - name: Clean up secrets
-      #   run: echo "Removing sensitive information from logs"
-      #   env:
-      #     POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-
-      - name: Build Docker Image for Production
-        run: |
-          docker build -t backend:prod --build-arg NODE_ENV=production .
-
-      # - name: Run Unit and Integration Tests
-      #   run: |
-      #     docker-compose up --build --exit-code-from backend
-
-      - name: Clean up orphan containers and images
-        run: |
-          docker-compose down -v --remove-orphans
-
-      - name: Run Linting
-        run: yarn lint
-
-      - name: Check for vulnerabilities
-        run: |
-          docker scan backend:prod
-
-      - name: Run Backend in Production Mode
-        run: |
-          docker run -d --name backend-prod \
-            --link postgres:postgres-db \
-            --link mongo:mongo-db \
-            --env-file .env.production \
-            -p 8080:8080 backend:prod
-
-      # - name: Run Production Tests
-      #   run: curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8080 || exit 1
-
-      # Model to use later
-      # - name: Notify Slack
-      #   uses: rtCamp/action-slack-notify@v2
-      #   with:
-      #     webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     message: "Build, Test and Deploy completed,  the Pipeline completed successfully!"
-
-      - name: Clean up
-        run: |
-          docker stop backend-prod || true
-          docker rm backend-prod || true
-          docker rmi backend:prod || true
+      - name: 🚀 Trigger Deploy on Render
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}

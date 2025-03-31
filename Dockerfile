@@ -14,6 +14,6 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
-EXPOSE ${PORT:-3001}
+EXPOSE 3001
 
 CMD ["sh", "-c", "yarn run ${NODE_ENV}"]

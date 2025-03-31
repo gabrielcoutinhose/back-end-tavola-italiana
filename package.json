@@ -6,7 +6,7 @@
     "dev": "nodemon",
     "debug": "nodemon --inspect",
     "test": "jest",
-    "production": "node app.js",
+    "build": "node src/app.js",
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo",
     "migration:create": "sequelize migration:create --name",

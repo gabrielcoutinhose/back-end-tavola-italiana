@@ -82,7 +82,7 @@ class ProductController {
         ],
       });
       return response.status(200).json(products);
-    } catch (err) {
+    } catch {
       return response.status(500).json({ error: "Internal server error" });
     }
   }

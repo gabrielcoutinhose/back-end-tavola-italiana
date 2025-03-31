@@ -37,11 +37,13 @@ class SessionController {
         id: user.id,
         name: user.name,
         email,
-        admin: user.admin || false,
+        admin: user.admin,
         token,
       });
     } catch (err) {
-      return response.status(500).json({ error: "Internal server error" });
+      return response
+        .status(500)
+        .json({ error: "Internal server error", msg: err });
     }
   }
 }

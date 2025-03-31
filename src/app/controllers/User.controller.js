@@ -7,7 +7,7 @@ class UserController {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string().email().required(),
-      password: Yup.string().required().min(6),
+      password: Yup.string().required().min(8),
       admin: Yup.boolean(),
     });
     try {
@@ -32,7 +32,9 @@ class UserController {
         .status(201)
         .json({ id: user.id, name, email, admin: user.admin || false });
     } catch (err) {
-      return response.status(500).json({ error: "Internal server error" });
+      return response
+        .status(500)
+        .json({ error: "Internal server error", msg: err });
     }
   }
 }
